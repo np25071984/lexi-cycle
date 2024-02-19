@@ -20,11 +20,74 @@ It is nice to have a common document format in order to exchange vocabulary betw
 
 A vocabulary isn't about words only. It is also about the context, about usage practices and pronounciation. This is why it is vital to have links on the original word source (where you heard it the first time), [Youglish](https://youglish.com/), [Cambrige dictionary](https://dictionary.cambridge.org/us/), etc.
 
-### Space Repetition technique
+### Spaced Repetition technique
 
 Newly introduced and more difficult words are shown more frequently, while older and less difficult words are shown less frequently in order to exploit the psychological spacing effect.
+
+## States
+
+Each _Record_ can move through a number of predefined states. It can move either forward or backward depending on the check result.
+
+```mermaid
+flowchart LR
+    State0 --> State1
+    State1 --> State7
+    State1 -.-> State1
+    State7 --> State30
+    State7 -.-> State1
+    State30 --> State90
+    State30 -.-> State1
+    State90 --> State360
+    State90 -.-> State1
+    State360 -.-> State1
+```
+
+ Each of the _States_ represents the amount of days after which the record will be offered for studying again. If
+
+## Implementation detail
+
+### Database schema
+
+```mermaid
+erDiagram
+    USER {
+        INTEGER id
+        VARCHAR(64) firstname
+        VARCHAR(64) lastname
+        VARCHAR(64) username
+        VARCHAR(64) password
+        VARCHAR(64) timezone
+    }
+    DICTIONARY {
+        INTEGER record_id
+        VARCHAR(40) key
+        VARCHAR(64) picture
+        TEXT meaning
+        JSON links
+    }
+    USER-DICTIONARY {
+        INTEGER user_id
+        INTEGER record_id
+        VARCHAR(64) picture
+        TEXT meaning
+        JSON links
+        DATETIME due
+        INTEGER state
+    }
+    USER ||--o{ USER-DICTIONARY : uuid
+    DICTIONARY ||--o{ USER-DICTIONARY : id
+```
+
+## Terminology
+
+* Dictionary - a knowledge storage which contains _Items_
+* Record - a unique pair of _Key_ + _Meaning_ from the _Dictionary_
+* Key - a single _Record_ identifier; might be either a word or a phrase.
+* Meaning - detailed description of an appropriate _Key_
 
 ## Analogs
 
 * [Anki](https://github.com/ankitects/anki)
 * [LinguaLeo](https://lingualeo.com/en)
+* [Duolingo](https://www.duolingo.com/)
+* [Memcode](https://github.com/lakesare/memcode)
