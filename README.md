@@ -52,16 +52,16 @@ flowchart LR
 erDiagram
     USER {
         INTEGER id
-        VARCHAR(64) firstname
-        VARCHAR(64) lastname
-        VARCHAR(64) username
-        VARCHAR(64) password
+        VARCHAR(255) email
+        VARCHAR(255) password
+        VARCHAR(255) firstname
+        VARCHAR(255) lastname
         VARCHAR(64) timezone
     }
     DICTIONARY {
         INTEGER record_id
-        VARCHAR(40) key
-        VARCHAR(64) picture
+        VARCHAR(255) key
+        VARCHAR(255) picture
         TEXT meaning
         JSON links
     }

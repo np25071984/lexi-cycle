@@ -1,0 +1,5 @@
+192.168.65.1 - - [20/Feb/2024:03:21:14 +0000] "GET / HTTP/1.1" 500 301453 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0"
+192.168.65.1 - - [20/Feb/2024:03:30:18 +0000] "GET / HTTP/1.1" 200 67 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0"
+192.168.65.1 - - [20/Feb/2024:03:30:18 +0000] "GET /favicon.ico HTTP/1.1" 404 35243 "http://localhost/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0"
+192.168.65.1 - - [20/Feb/2024:03:30:19 +0000] "GET / HTTP/1.1" 200 67 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0"
+192.168.65.1 - - [20/Feb/2024:03:30:19 +0000] "GET /favicon.ico HTTP/1.1" 404 35277 "http://localhost/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:122.0) Gecko/20100101 Firefox/122.0"
