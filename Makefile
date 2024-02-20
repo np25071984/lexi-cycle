@@ -39,12 +39,12 @@ logs:
 
 ## Migration status
 migration-status:
-	docker run -it -v ./source/.env:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" status
+	docker run -it -v ./source/.env.local:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" status
 
 ## Migrate DB
 migration-up:
-	docker run -it -v ./source/.env:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" migrate
+	docker run -it -v ./source/.env.local:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" migrate
 
 ## Rollback the most recent migration
 migration-down:
-	docker run -it -v ./source/.env:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" down
+	docker run -it -v ./source/.env.local:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" down
