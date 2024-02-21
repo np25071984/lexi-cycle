@@ -19,15 +19,15 @@ help:
 
 ## Build Docker Compose services with no cache
 build:
-	cd ./.docker && docker-compose build --no-cache
+	cd ./.docker && docker-compose  --env-file ./../source/.env.local  build --no-cache
 
 ## Start Docker Compose services, pull images and wait for them to be up
 up:
-	cd ./.docker && docker-compose up -d
+	cd ./.docker && docker-compose --env-file ./../source/.env.local  up -d
 
 ## Stop and remove Docker Compose services
 down:
-	cd ./.docker && docker-compose down --remove-orphans
+	cd ./.docker && docker-compose --env-file ./../source/.env.local down --remove-orphans
 
 ## Show logs
 logs:
@@ -48,3 +48,7 @@ migration-up:
 ## Rollback the most recent migration
 migration-down:
 	docker run -it -v ./source/.env.local:/config/.env -v ./db:/volume/ --network=docker_default ghcr.io/amacneil/dbmate --env-file "/config/.env" --migrations-dir "/volume/migrations" down
+
+## Create migration (with name=<migration_name> command line argument)
+migration-new:
+	docker run -it -v ./db:/volume/ ghcr.io/amacneil/dbmate --migrations-dir "/volume/migrations" new $(name)

@@ -68,7 +68,7 @@ erDiagram
     USER-DICTIONARY {
         INTEGER user_id
         INTEGER record_id
-        VARCHAR(64) picture
+        VARCHAR(255) picture
         TEXT meaning
         JSON links
         DATETIME due

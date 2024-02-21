@@ -6,8 +6,8 @@ services:
     image: postgres:12
     restart: always
     environment:
-        POSTGRES_PASSWORD: password
-        POSTGRES_DB: lexi-cycle
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_DB: ${DB_NAME}
     ports:
         - 15432:5432
 
@@ -42,14 +42,3 @@ services:
 
 networks:
   lexi-cycle-network:
-
-  # dbmate:
-  #   container_name: dbmate
-  #   image: amacneil/dbmate
-  #   depends_on:
-  #     - db
-  #   volumes:
-  #     - ./db/migrations:/db/migrations
-  #     - ./../source/:/source
-  #   env_file:
-  #         - /source/.env
