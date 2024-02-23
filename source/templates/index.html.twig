@@ -15,29 +15,42 @@
     </head>
     <body>
 
-    <div class="container" style="max-width: 650px;">
-        <div class="row">
-            <div class="mr-auto ml-auto text-center">
-                <h1>{{ record.getKey() }}</h1>
+        {{ user.getEmail() }}
+        <div class="container" style="max-width: 650px;">
+            <div class="row mt-5">
+                <div class="mr-auto ml-auto text-center">
+                    <h1>{{ record.getKey() }}</h1>
+                    <small>{{ record.getState().getId() }}</small>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="mr-auto ml-auto">
+                    {% if record.getMeaning() != null %}
+                        {{ record.getMeaning() | markdown_to_html }}
+                    {% endif %}
+                </div>
+            </div>
+            {% set links = record.getLinks() %}
+            {% if links|length > 0 %}
+            <div class="row mt-5">
+                <div class="mr-auto ml-auto">
+                    <h3>Links</h3>
+                    {% for link in links %}
+                        <p><a href="{{ link.link }}">{{ link.title }}</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            <div class="row mt-5 mb-3">
+                <div class="mr-auto ml-auto text-center">
+                    <a href="{{ path('move_record_backward', {'userId': user.getId(), 'recordId': record.getRecordId()}) }}" class="btn btn-light" role="button">
+                        Bad
+                    </a>
+                    <a href="{{ path('move_record_forward', {'userId': user.getId(), 'recordId': record.getRecordId()}) }}" class="btn btn-light" role="button">
+                        Good
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="mr-auto ml-auto">
-                {% if record.getMeaning() != null %}
-                    <p>{{ record.getMeaning() | markdown_to_html }}</p>
-                {% endif %}
-            </div>
-        </div>
-        {% if record.getLinks()|length > 0 %}
-        <div class="row">
-            <div class="mr-auto ml-auto">
-                <h3>Links</h3>
-                {% for link in record.getLinks() %}
-                    <p><a href="{{ link.link }}">{{ link.title }}</a></p>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
     </body>
 </html>
