@@ -1,16 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Entity;
 
-readonly class RecordEntity
+use App\State\AbstractState;
+
+class RecordEntity
 {
     public function __construct(
         private int $recordId,
         private int $userId,
+        private AbstractState $state,
         private string $key,
         private ?string $meaning = null,
         private array $links = [],
-    ) {}
+    ) {
+        $this->transitionTo($state);
+    }
 
     public function getRecordId(): int
     {
@@ -20,6 +25,17 @@ readonly class RecordEntity
     public function getUserId(): int
     {
         return $this->userId;
+    }
+
+    public function getState(): AbstractState
+    {
+        return $this->state;
+    }
+
+    public function transitionTo(AbstractState $state): void
+    {
+        $this->state = $state;
+        $this->state->setRecord($this);
     }
 
     public function getKey(): string
