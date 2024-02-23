@@ -79,29 +79,34 @@ INSERT INTO dictionary("key") VALUES ('Rome was not built overnight');
 
 INSERT INTO "user"(email, password, timezone) VALUES ('mail@mail.com', 'secret', 'US/Eastern"');
 
-INSERT INTO "user-dictionary"(user_id, record_id) VALUES (
+INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
-    (SELECT record_id FROM "dictionary" WHERE "key" = 'mesmerizing')
+    (SELECT record_id FROM "dictionary" WHERE "key" = 'mesmerizing'),
+    'state_90'
 );
 
-INSERT INTO "user-dictionary"(user_id, record_id) VALUES (
+INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
-    (SELECT record_id FROM "dictionary" WHERE "key" = 'come across')
+    (SELECT record_id FROM "dictionary" WHERE "key" = 'come across'),
+    'state_30'
 );
 
-INSERT INTO "user-dictionary"(user_id, record_id) VALUES (
+INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
-    (SELECT record_id FROM "dictionary" WHERE "key" = 'stray <noun>')
+    (SELECT record_id FROM "dictionary" WHERE "key" = 'stray <noun>'),
+    'state_7'
 );
 
-INSERT INTO "user-dictionary"(user_id, record_id) VALUES (
+INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
-    (SELECT record_id FROM "dictionary" WHERE "key" = 'shoddy')
+    (SELECT record_id FROM "dictionary" WHERE "key" = 'shoddy'),
+    'state_1'
 );
 
-INSERT INTO "user-dictionary"(user_id, record_id) VALUES (
+INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
-    (SELECT record_id FROM "dictionary" WHERE "key" = 'Rome was not built overnight')
+    (SELECT record_id FROM "dictionary" WHERE "key" = 'Rome was not built overnight'),
+    'state_0'
 );
 
 -- migrate:down
