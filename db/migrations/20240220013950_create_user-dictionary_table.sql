@@ -7,7 +7,7 @@ CREATE TABLE "user-dictionary" (
     picture VARCHAR(255),
     meaning TEXT,
     links JSON,
-    due TIMESTAMP,
+    due TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "state" state_enum NOT NULL,
     CONSTRAINT fk_user
         FOREIGN KEY(user_id)
