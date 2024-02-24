@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Repository\RecordRepository;
@@ -16,34 +15,27 @@ class RecordController extends AbstractController
         private RecordRepository $recordRepository,
     ) {}
 
-    #[Route('/record', name: 'route_record_get', methods: ['GET'])]
-    public function getRecord(Request $request): Response
+    #[Route('/records', name: 'route_records_get', methods: ['GET'])]
+    public function getRecords(Request $request)
     {
-        $session = $request->getSession();
-        $userId = $session->get('user_id');
+        $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
 
         $user = $this->userRepository->getUserById($userId);
-        $record = $this->recordRepository->findRecord($user->getId());
-        if (is_null($record)) {
-            return $this->render('Record/no-records.html.twig', [
-                'user' => $user,
-            ]);
-        }
+        $records = $this->recordRepository->getRecords($userId);
 
-        return $this->render('Record/index.html.twig', [
+        return $this->render('Record/list.html.twig', [
             'user' => $user,
-            "record" => $record,
+            'records' => $records,
         ]);
     }
 
     #[Route('/state/{recordId}/forward', name: 'route_state_forward_get', methods: ['GET'])]
     public function moveForward(Request $request, int $recordId)
     {
-        $session = $request->getSession();
-        $userId = $session->get('user_id');
+        $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
@@ -53,14 +45,13 @@ class RecordController extends AbstractController
         $record->getState()->next();
         $this->recordRepository->updateState($user, $record);
 
-        return $this->redirectToRoute("route_record_get");
+        return $this->redirectToRoute("route_home_get");
     }
 
     #[Route('/state/{recordId}/backward', name: 'route_state_backward_get', methods: ['GET'])]
     public function moveBackward(Request $request, int $recordId)
     {
-        $session = $request->getSession();
-        $userId = $session->get('user_id');
+        $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
@@ -70,6 +61,6 @@ class RecordController extends AbstractController
         $record->getState()->rollback();
         $this->recordRepository->updateState($user, $record);
 
-        return $this->redirectToRoute("route_record_get");
+        return $this->redirectToRoute("route_home_get");
     }
 }

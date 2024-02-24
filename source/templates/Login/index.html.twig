@@ -1,44 +1,51 @@
-{% extends "base.html.twig" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block title %}Login{% endblock %}
+        <title>Login - LexiCycle</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container" style="max-width: 650px;">
+            <div class="row">
+                <div class="col-md-12 min-vh-100 d-flex flex-column justify-content-center">
+                    <div class="row">
+                        <div class="col-8 mx-auto">
 
-{% block content %}
-
-<div class="row">
-    <div class="col-md-12 min-vh-100 d-flex flex-column justify-content-center">
-        <div class="row">
-            <div class="col-8 mx-auto">
-
-                <!-- form card login -->
-                <div class="card rounded shadow shadow-sm">
-                    <div class="card-header">
-                        <h3 class="mb-0">Login</h3>
-                    </div>
-                    <div class="card-body">
-                        <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST">
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="text" class="form-control form-control-lg" name="email" id="email" required="">
-                                <div class="invalid-feedback">Oops, you missed this one.</div>
+                            <!-- form card login -->
+                            <div class="card rounded shadow shadow-sm">
+                                <div class="card-header">
+                                    <h3 class="mb-0">Login</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="text" class="form-control form-control-lg" name="email" id="email" required="">
+                                            <div class="invalid-feedback">Oops, you missed this one.</div>
+                                        </div>
+                                        <div class="form-group mt-1">
+                                            <label>Password</label>
+                                            <input type="password" class="form-control form-control-lg" name="password" id="password" required="" autocomplete="new-password">
+                                            <div class="invalid-feedback">Enter your password too!</div>
+                                        </div>
+                                        <div class="mt-1">
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox">
+                                                <span class="text-dark">Remember me on this computer</span>
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-success btn-lg float-end" id="btnLogin">Login</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="form-group mt-1">
-                                <label>Password</label>
-                                <input type="password" class="form-control form-control-lg" name="password" id="password" required="" autocomplete="new-password">
-                                <div class="invalid-feedback">Enter your password too!</div>
-                            </div>
-                            <div class="mt-1">
-                                <label class="custom-checkbox">
-                                    <input type="checkbox">
-                                    <span class="text-dark">Remember me on this computer</span>
-                                </label>
-                            </div>
-                            <button type="submit" class="btn btn-success btn-lg float-end" id="btnLogin">Login</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-{% endblock %}
+    </body>
+</html>

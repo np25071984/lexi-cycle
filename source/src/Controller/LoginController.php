@@ -17,13 +17,19 @@ class LoginController extends AbstractController
     #[Route('/login', name: 'route_get_login', methods: ['GET'])]
     public function getLogin(Request $request): Response
     {
-        $session = $request->getSession();
-        $userId = $session->get('user_id');
+        $userId = $request->getSession()->get('user_id');
         if (!is_null($userId)) {
-            return $this->redirectToRoute('route_record_get');
+            return $this->redirectToRoute('route_home_get');
         }
 
         return $this->render('Login/index.html.twig');
+    }
+
+    #[Route('/logout', name: 'route_get_logout', methods: ['GET'])]
+    public function getLogout(Request $request): Response
+    {
+        $request->getSession()->remove('user_id');
+        return $this->redirectToRoute('route_get_login');
     }
 
     #[Route('/login', name: 'route_post_login', methods: ['POST'])]
@@ -33,19 +39,19 @@ class LoginController extends AbstractController
         $email = $formData["email"] ?? null;
         $user = $this->userRepository->findUserByEmail($email);
         if (is_null($user)) {
-            // TODO: error
+            // TODO: redirect to route_get_login with error
             throw new \Exception("Auth error");
         }
 
         $password = $formData["password"] ?? null;
         if ($user->getPassword() !== $password) {
-            // TODO: error
+            // TODO: redirect to route_get_login with error
             throw new \Exception("Auth error");
         }
 
         $session = $request->getSession();
         $session->set('user_id', $user->getId());
 
-        return $this->redirectToRoute('route_record_get');
+        return $this->redirectToRoute('route_home_get');
     }
 }

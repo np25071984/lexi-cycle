@@ -16,31 +16,6 @@ class RecordRepository
         private StateFactory $stateFactory,
     ) {}
 
-    public function getRandomRecord(int $userId): RecordEntity
-    {
-        $query = <<<SQL
-            SELECT
-                d."key",
-                d.record_id,
-                CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
-                CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
-                state
-            FROM "user-dictionary" ud
-            INNER JOIN dictionary d ON d.record_id = ud.record_id
-            WHERE ud.user_id = {$userId}
-            ORDER BY RANDOM()
-            LIMIT 1
-            SQL;
-
-        $records = $this->connection->fetchAllAssociative($query);
-        $rawRecord = $records[0];
-        if (is_null($rawRecord)) {
-            throw new \Exception("Record wasn't found");
-        }
-
-        return $this->buildEntity($userId, $rawRecord);
-    }
-
     public function findRecord(int $userId): ?RecordEntity
     {
         $query = <<<SQL
@@ -48,12 +23,13 @@ class RecordRepository
                 d."key",
                 d.record_id,
                 CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
+                ud.due,
                 CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
                 state
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
-            WHERE ud.user_id = {$userId} AND due < NOW()
-            ORDER BY due ASC
+            WHERE ud.user_id = {$userId} AND ud.due < NOW()
+            ORDER BY ud.due ASC
             LIMIT 1
             SQL;
 
@@ -66,6 +42,35 @@ class RecordRepository
         return $this->buildEntity($userId, $rawRecord);
     }
 
+    /**
+     * @return RecordEntity[]
+     */
+    public function getRecords(int $userId): array
+    {
+        $query = <<<SQL
+            SELECT
+                d."key",
+                d.record_id,
+                CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
+                ud.due,
+                CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
+                state
+            FROM "user-dictionary" ud
+            INNER JOIN dictionary d ON d.record_id = ud.record_id
+            WHERE ud.user_id = {$userId}
+            ORDER BY due ASC
+            LIMIT 10
+            SQL;
+
+        $records = [];
+        $rawRecords = $this->connection->fetchAllAssociative($query);
+        foreach ($rawRecords as $rawRecord) {
+            $records[] = $this->buildEntity($userId, $rawRecord);
+        }
+
+        return $records;
+    }
+
     public function getByUserAndRecordId(int $userId, int $recordId): RecordEntity
     {
         $query = <<<SQL
@@ -73,6 +78,7 @@ class RecordRepository
                 d."key",
                 d.record_id,
                 CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
+                ud.due,
                 CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
                 state
             FROM "user-dictionary" ud
@@ -127,6 +133,7 @@ class RecordRepository
             $state,
             $rawData["key"],
             $rawData["meaning"],
+            new DateTimeImmutable($rawData["due"], new \DateTimeZone('UTC')),
             $links
         );
     }

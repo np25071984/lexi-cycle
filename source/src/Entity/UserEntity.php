@@ -46,4 +46,13 @@ class UserEntity
     {
         return $this->timezone;
     }
+
+    public function getUserName(): string
+    {
+        if (is_null($this->firstname) && is_null($this->lastname)) {
+            return $this->getEmail();
+        }
+
+        return $this->getFirstName() . " " . $this->getLastName();
+    }
 }

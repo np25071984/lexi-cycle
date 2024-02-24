@@ -1,0 +1,26 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Records{% endblock %}
+
+{% block content %}
+
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th>Key</th>
+            <th>Stage</th>
+            <th>Due</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in records %}
+            <tr>
+                <td>{{ record.getKey() }}</td>
+                <td>{{ record.getState().getId() }}</td>
+                <td>{{ record.getDue().format("Y-m-d H:i:s") }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

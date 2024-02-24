@@ -4,13 +4,13 @@
 
 {% block content %}
 
-<div class="row mt-5">
+<div class="mt-5">
     <div class="mr-auto ml-auto text-center">
         <h1>{{ record.getKey() }}</h1>
         <small>{{ record.getState().getId() }}</small>
     </div>
 </div>
-<div class="row mt-5">
+<div class="mt-5">
     <div class="mr-auto ml-auto">
         {% if record.getMeaning() != null %}
             {{ record.getMeaning() | markdown_to_html }}
@@ -19,7 +19,7 @@
 </div>
 {% set links = record.getLinks() %}
 {% if links|length > 0 %}
-<div class="row mt-5">
+<div class="mt-5">
     <div class="mr-auto ml-auto">
         <h3>Links</h3>
         {% for link in links %}
@@ -28,7 +28,7 @@
     </div>
 </div>
 {% endif %}
-<div class="row mt-5 mb-3">
+<div class="mt-5 mb-5">
     <div class="mr-auto ml-auto text-center">
         <a href="{{ path('route_state_backward_get', {'userId': user.getId(), 'recordId': record.getRecordId()}) }}" class="btn btn-light" role="button">
             Bad

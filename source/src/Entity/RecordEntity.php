@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\State\AbstractState;
+use DateTimeInterface;
 
 class RecordEntity
 {
@@ -12,6 +13,7 @@ class RecordEntity
         private AbstractState $state,
         private string $key,
         private ?string $meaning = null,
+        private DateTimeInterface $due,
         private array $links = [],
     ) {
         $this->transitionTo($state);
@@ -46,6 +48,11 @@ class RecordEntity
     public function getMeaning(): ?string
     {
         return $this->meaning;
+    }
+
+    public function getDue(): DateTimeInterface
+    {
+        return $this->due;
     }
 
     public function getLinks(): array
