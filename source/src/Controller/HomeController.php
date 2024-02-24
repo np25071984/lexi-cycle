@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Repository\RecordRepository;
+use App\Repository\UserDictionaryRecordRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,7 +13,7 @@ class HomeController extends AbstractController
 {
     function __construct(
         private UserRepository $userRepository,
-        private RecordRepository $recordRepository,
+        private UserDictionaryRecordRepository $recordRepository,
     ) {}
 
     #[Route("/", name: "route_home_get", methods: ["GET"])]
@@ -25,7 +25,7 @@ class HomeController extends AbstractController
         }
 
         $user = $this->userRepository->getUserById($userId);
-        $record = $this->recordRepository->findRecord($user->getId());
+        $record = $this->recordRepository->findRecordToReview($user->getId());
         if (is_null($record)) {
             return $this->render('Home/no-records.html.twig', [
                 "user" => $user,

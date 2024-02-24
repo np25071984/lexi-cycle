@@ -4,15 +4,21 @@ namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Repository\RecordRepository;
+use App\Repository\UserDictionaryRecordRepository;
 use App\Repository\UserRepository;
+use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\UserDictionaryRecordEntity;
+use App\State\State0;
+use App\Service\UserDictionaryRecordService;
 
 class RecordController extends AbstractController
 {
     function __construct(
         private UserRepository $userRepository,
-        private RecordRepository $recordRepository,
+        private UserDictionaryRecordRepository $userDictionaryRecordRepository,
+        private UserDictionaryRecordService $userDictionaryRecordService,
     ) {}
 
     #[Route('/records', name: 'route_records_get', methods: ['GET'])]
@@ -24,7 +30,7 @@ class RecordController extends AbstractController
         }
 
         $user = $this->userRepository->getUserById($userId);
-        $records = $this->recordRepository->getRecords($userId);
+        $records = $this->userDictionaryRecordRepository->getRecords($userId);
 
         return $this->render('Record/list.html.twig', [
             'user' => $user,
@@ -32,8 +38,8 @@ class RecordController extends AbstractController
         ]);
     }
 
-    #[Route('/state/{recordId}/forward', name: 'route_state_forward_get', methods: ['GET'])]
-    public function moveForward(Request $request, int $recordId)
+    #[Route('/record/add', name: 'route_record_add_get', methods: ['GET'])]
+    public function getAddRecord(Request $request)
     {
         $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
@@ -41,15 +47,14 @@ class RecordController extends AbstractController
         }
 
         $user = $this->userRepository->getUserById($userId);
-        $record = $this->recordRepository->getByUserAndRecordId($userId, $recordId);
-        $record->getState()->next();
-        $this->recordRepository->updateState($user, $record);
 
-        return $this->redirectToRoute("route_home_get");
+        return $this->render('Record/add.html.twig', [
+            'user' => $user,
+        ]);
     }
 
-    #[Route('/state/{recordId}/backward', name: 'route_state_backward_get', methods: ['GET'])]
-    public function moveBackward(Request $request, int $recordId)
+    #[Route('/record/add', name: 'route_record_add_post', methods: ['POST'])]
+    public function postAddRecord(Request $request)
     {
         $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
@@ -57,10 +62,31 @@ class RecordController extends AbstractController
         }
 
         $user = $this->userRepository->getUserById($userId);
-        $record = $this->recordRepository->getByUserAndRecordId($userId, $recordId);
-        $record->getState()->rollback();
-        $this->recordRepository->updateState($user, $record);
 
-        return $this->redirectToRoute("route_home_get");
+        $formData = $request->request->all();
+        $key = $formData["key"] ?? null;
+        if (is_null($key)) {
+            // TODO: redirect to route_record_add_get with error
+            throw new \Exception("Form error");
+        }
+
+        $meaning = $formData["meaning"] ?? null;
+        if (is_null($meaning)) {
+            // TODO: redirect to route_record_add_get with error
+            throw new \Exception("Form error");
+        }
+
+        $record = new UserDictionaryRecordEntity(
+            -1,
+            $userId,
+            new State0(),
+            $key,
+            $meaning,
+            new DateTimeImmutable('NOW', new DateTimeZone($user->getTimezone())),
+            []
+        );
+        $this->userDictionaryRecordService->createRecord($record);
+
+        return $this->redirectToRoute('route_record_add_get');
     }
 }

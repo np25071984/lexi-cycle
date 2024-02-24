@@ -2,15 +2,15 @@
 
 namespace App\State;
 
-use App\Entity\RecordEntity;
+use App\Entity\UserDictionaryRecordEntity;
 
 abstract class AbstractState
 {
-    protected RecordEntity $record;
+    protected UserDictionaryRecordEntity $record;
     protected const DELAY_DAYS = 0;
     protected const STATE_ID = 'state_0';
 
-    public function setRecord(RecordEntity $record): void {
+    public function setRecord(UserDictionaryRecordEntity $record): void {
         $this->record = $record;
     }
 

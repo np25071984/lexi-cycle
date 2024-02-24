@@ -5,23 +5,20 @@ namespace App\Entity;
 use App\State\AbstractState;
 use DateTimeInterface;
 
-class RecordEntity
+class UserDictionaryRecordEntity extends DictionaryRecordEntity
 {
     public function __construct(
-        private int $recordId,
+        protected int $recordId,
         private int $userId,
         private AbstractState $state,
-        private string $key,
-        private ?string $meaning = null,
+        protected string $key,
+        protected ?string $meaning = null,
         private DateTimeInterface $due,
-        private array $links = [],
+        protected array $links = [],
     ) {
-        $this->transitionTo($state);
-    }
+        parent::__construct($recordId, $key, $meaning, $links);
 
-    public function getRecordId(): int
-    {
-        return $this->recordId;
+        $this->transitionTo($state);
     }
 
     public function getUserId(): int
@@ -40,23 +37,8 @@ class RecordEntity
         $this->state->setRecord($this);
     }
 
-    public function getKey(): string
-    {
-        return $this->key;
-    }
-
-    public function getMeaning(): ?string
-    {
-        return $this->meaning;
-    }
-
     public function getDue(): DateTimeInterface
     {
         return $this->due;
-    }
-
-    public function getLinks(): array
-    {
-        return $this->links;
     }
 }
