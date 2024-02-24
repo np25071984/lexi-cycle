@@ -7,6 +7,7 @@ class UserEntity
     public function __construct(
         private int $id,
         private string $email, // TODO: valueObject
+        private string $password,
         private ?string $firstname,
         private ?string $lastname,
         private string $timezone,
@@ -20,6 +21,15 @@ class UserEntity
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    /**
+     * @return string hashed password
+     * Do we want to have this member in the entity?
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 
     public function getFirstName(): ?string

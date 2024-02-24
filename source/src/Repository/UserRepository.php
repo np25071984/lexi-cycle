@@ -11,12 +11,12 @@ class UserRepository
         private Connection $connection
     ) {}
 
-    public function getUserByEmail(string $email): UserEntity
+    public function findUserByEmail(string $email): ?UserEntity
     {
         $users = $this->connection->fetchAllAssociative(sprintf("SELECT * FROM \"user\" WHERE email='%s'", $email));
         $rawUser = $users[0] ?? null;
         if (is_null($rawUser)) {
-            throw new \Exception("User wasn't found");
+            return null;
         }
 
         return $this->buildEntity($rawUser);
@@ -39,6 +39,7 @@ class UserRepository
         return new UserEntity(
             (int)$rawData["id"],
             $rawData["email"],
+            $rawData["password"],
             $rawData["firstname"],
             $rawData["lastname"],
             $rawData["timezone"]
