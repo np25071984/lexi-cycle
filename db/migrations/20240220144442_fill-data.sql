@@ -77,7 +77,8 @@ If someone reveals a particularly unique, smart, and original idea, you might sa
 
 INSERT INTO dictionary("key") VALUES ('Rome was not built overnight');
 
-INSERT INTO "user"(email, password, timezone) VALUES ('mail@mail.com', 'secret', 'US/Eastern');
+INSERT INTO "user"(email, password, firstname, lastname, timezone)
+VALUES ('mail@mail.com', 'secret', 'Lexi', 'Cycle', 'US/Eastern');
 
 INSERT INTO "user-dictionary"(user_id, record_id, "state") VALUES (
     (SELECT id FROM "user" WHERE email = 'mail@mail.com'),
