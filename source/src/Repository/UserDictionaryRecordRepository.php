@@ -168,6 +168,15 @@ class UserDictionaryRecordRepository
         return $record;
     }
 
+    public function deleteRecord(int $userId, int $recordId): void
+    {
+        $query = <<<SQL
+            DELETE FROM "user-dictionary"
+            WHERE user_id = {$userId} AND record_id = {$recordId}
+        SQL;
+        $this->connection->executeQuery($query);
+    }
+
     private function buildEntity(int $userId, array $rawData): UserDictionaryRecordEntity
     {
         $links = json_decode($rawData["links"] ?? "[]", true);

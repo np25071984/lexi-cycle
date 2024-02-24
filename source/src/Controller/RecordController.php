@@ -89,4 +89,17 @@ class RecordController extends AbstractController
 
         return $this->redirectToRoute('route_record_add_get');
     }
+
+    #[Route('/record/delete/{recordId}', name: 'route_record_delete_get', methods: ['GET'])]
+    public function getDeleteRecord(int $recordId, Request $request)
+    {
+        $userId = $request->getSession()->get('user_id');
+        if (is_null($userId)) {
+            return $this->redirectToRoute('route_get_login');
+        }
+
+        $this->userDictionaryRecordRepository->deleteRecord($userId, $recordId);
+
+        return $this->redirectToRoute('route_records_get');
+    }
 }

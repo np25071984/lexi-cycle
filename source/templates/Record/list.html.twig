@@ -4,12 +4,13 @@
 
 {% block content %}
 
-<table class="table mt-5">
+<table class="table">
     <thead>
         <tr>
             <th>Key</th>
             <th>Stage</th>
             <th>Due</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -18,9 +19,13 @@
                 <td>{{ record.getKey() }}</td>
                 <td>{{ record.getState().getId() }}</td>
                 <td>{{ record.getDue().format("Y-m-d H:i:s") }}</td>
+                <td>
+                    <a href="{{ path('route_record_delete_get', {'recordId': record.getRecordId()}) }}" class="btn btn-warning" role="button">Delete</a>
+                </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+<a href="{{ path('route_record_add_get') }}" class="btn btn-primary" role="button">Add new Record</a>
 
 {% endblock %}
