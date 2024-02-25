@@ -33,7 +33,7 @@ class RecordController extends AbstractController
         }
         $user = $this->userRepository->getUserById($userId);
 
-        $perPageCount = 2;
+        $perPageCount = 25;
         $count = $this->userDictionaryRecordRepository->getRecordsCount($userId);
         $records = $this->userDictionaryRecordRepository->getRecords(
             $userId,
