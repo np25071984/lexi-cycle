@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use App\State\StateFactory;
 use DateTimeImmutable;
 use DateInterval;
+use DateTimeZone;
 
 class UserDictionaryRecordRepository
 {
@@ -24,10 +25,12 @@ class UserDictionaryRecordRepository
                 d.record_id,
                 CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
                 ud.due,
+                u.timezone,
                 CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
                 state
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
+            INNER JOIN "user" u ON u.id = ud.user_id
             WHERE ud.user_id = {$userId} AND ud.due < NOW()
             ORDER BY ud.due ASC
             LIMIT 1
@@ -53,10 +56,12 @@ class UserDictionaryRecordRepository
                 d.record_id,
                 CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
                 ud.due,
+                u.timezone,
                 CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
                 state
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
+            INNER JOIN "user" u ON u.id = ud.user_id
             WHERE ud.user_id = {$userId}
             ORDER BY due ASC
             OFFSET {$offset}
@@ -108,30 +113,6 @@ class UserDictionaryRecordRepository
 
         return $this->buildEntity($userId, $rawRecord);
     }
-
-    // public function getByUserAndKey(int $userId, string $key): UserDictionaryRecordEntity
-    // {
-    //     $query = <<<SQL
-    //         SELECT
-    //             d."key",
-    //             d.record_id,
-    //             CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
-    //             ud.due,
-    //             CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
-    //             state
-    //         FROM "user-dictionary" ud
-    //         INNER JOIN dictionary d ON d.record_id = ud.record_id
-    //         WHERE ud.user_id = {$userId} AND d.key = '{$key}'
-    //         SQL;
-
-    //     $records = $this->connection->fetchAllAssociative($query);
-    //     $rawRecord = $records[0];
-    //     if (is_null($rawRecord)) {
-    //         throw new \Exception("Record wasn't found");
-    //     }
-
-    //     return $this->buildEntity($userId, $rawRecord);
-    // }
 
     public function updateState(UserEntity $user, UserDictionaryRecordEntity $record): void
     {
@@ -226,6 +207,10 @@ class UserDictionaryRecordRepository
     {
         $links = json_decode($rawData["links"] ?? "[]", true);
         $state = $this->stateFactory->getState($rawData["state"]);
+        // Timestamptz is stored as UTC in the Database
+        $due = new DateTimeImmutable($rawData["due"], new DateTimeZone("UTC"));
+        // We want to show dates in local timezone
+        $due = $due->setTimezone(new DateTimeZone($rawData["timezone"]));
 
         return new UserDictionaryRecordEntity(
             (int)$rawData["record_id"],
@@ -233,7 +218,7 @@ class UserDictionaryRecordRepository
             $state,
             $rawData["key"],
             $rawData["meaning"],
-            new DateTimeImmutable($rawData["due"], new \DateTimeZone('UTC')),
+            $due,
             $links
         );
     }
