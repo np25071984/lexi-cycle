@@ -45,7 +45,7 @@ class UserDictionaryRecordRepository
     /**
      * @return UserDictionaryRecordEntity[]
      */
-    public function getRecords(int $userId): array
+    public function getRecords(int $userId, int $offset, int $limit): array
     {
         $query = <<<SQL
             SELECT
@@ -59,7 +59,8 @@ class UserDictionaryRecordRepository
             INNER JOIN dictionary d ON d.record_id = ud.record_id
             WHERE ud.user_id = {$userId}
             ORDER BY due ASC
-            LIMIT 10
+            OFFSET {$offset}
+            LIMIT {$limit}
             SQL;
 
         $records = [];
@@ -69,6 +70,19 @@ class UserDictionaryRecordRepository
         }
 
         return $records;
+    }
+
+    public function getRecordsCount(int $userId): int
+    {
+        $query = <<<SQL
+            SELECT COUNT(*) AS cnt
+            FROM "user-dictionary"
+            WHERE user_id = {$userId}
+            SQL;
+
+        $records = [];
+        $rawResult = $this->connection->fetchAllAssociative($query);
+        return (int)$rawResult[0]["cnt"];
     }
 
     public function findByUserAndRecordId(int $userId, int $recordId): ?UserDictionaryRecordEntity

@@ -30,4 +30,17 @@
 </table>
 <a href="{{ path('route_record_add_get') }}" class="btn btn-primary" role="button">Add new Record</a>
 
+{% set prev_page = current_page - 1 > 1 ? current_page - 1 : 1 %}
+{% set next_page = current_page + 1 <= max_page ? current_page + 1 : max_page %}
+
+<nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+        <li class="page-item"><a class="page-link" href="{{ path('route_records_get', {'page': prev_page}) }}">Previous</a></li>
+        {% for i in 1..max_page %}
+            <li class="page-item"><a class="page-link" href="{{ path('route_records_get', {'page': i}) }}">{{ i }}</a></li>
+        {% endfor %}
+        <li class="page-item"><a class="page-link" href="{{ path('route_records_get', {'page': next_page}) }}">Next</a></li>
+    </ul>
+</nav>
+
 {% endblock %}

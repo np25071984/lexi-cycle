@@ -24,17 +24,29 @@ class RecordController extends AbstractController
     #[Route('/records', name: 'route_records_get', methods: ['GET'])]
     public function getRecords(Request $request)
     {
+        $urlQuery = $request->query->all();
+        $currentPage = $urlQuery["page"] ?? 1;
+
         $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
         $user = $this->userRepository->getUserById($userId);
 
-        $records = $this->userDictionaryRecordRepository->getRecords($userId);
+        $perPageCount = 2;
+        $count = $this->userDictionaryRecordRepository->getRecordsCount($userId);
+        $records = $this->userDictionaryRecordRepository->getRecords(
+            $userId,
+            ($currentPage - 1) * $perPageCount,
+            $perPageCount
+        );
+        $maxPage = ceil($count / $perPageCount);
 
         return $this->render('Record/list.html.twig', [
             'user' => $user,
             'records' => $records,
+            'current_page' => $currentPage,
+            'max_page' => $maxPage,
         ]);
     }
 
