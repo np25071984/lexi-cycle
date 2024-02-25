@@ -5,7 +5,7 @@ INSERT INTO dictionary("key", meaning, links) VALUES (
     'Very attractive, in a mysterious way, making you want to keep looking
 
 * He had the most **mesmerizing** blue eyes',
-    '[{"title": "Cambridge Dictionary", "link": "https://dictionary.cambridge.org/us/dictionary/english/mesmerizing"}, {"title":"YouGlish", "link": "https://youglish.com/pronounce/mesmerizing/english?"}]'
+    '[{"title": "Cambridge Dictionary", "url": "https://dictionary.cambridge.org/us/dictionary/english/mesmerizing"}, {"title":"YouGlish", "url": "https://youglish.com/pronounce/mesmerizing/english?"}]'
 );
 
 INSERT INTO dictionary("key", meaning, links) VALUES (
@@ -27,7 +27,7 @@ If an idea or emotion **comes across** in writing, a movie, music, or when someo
 
 * He **comes across as** a bit of a bore
 * We don''t mean to be vague, but I know that''s how it **comes across**.',
-    '[{"title": "Cambridge Dictionary", "link": "https://dictionary.cambridge.org/us/dictionary/english/come-across"}, {"title":"YouGlish", "link": "https://youglish.com/pronounce/come%20across/english?"}]'
+    '[{"title": "Cambridge Dictionary", "url": "https://dictionary.cambridge.org/us/dictionary/english/come-across"}, {"title":"YouGlish", "url": "https://youglish.com/pronounce/come%20across/english?"}]'
 );
 
 INSERT INTO dictionary("key", meaning) VALUES (
@@ -72,7 +72,7 @@ If someone reveals a particularly unique, smart, and original idea, you might sa
 
 * She had a genius idea for a new app.
 ',
-    '[{"title": "ProWritingAid", "link": "https://prowritingaid.com/genius-vs-genious"}]'
+    '[{"title": "ProWritingAid", "url": "https://prowritingaid.com/genius-vs-genious"}]'
 );
 
 INSERT INTO dictionary("key") VALUES ('Rome was not built overnight');

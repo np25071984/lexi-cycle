@@ -76,6 +76,14 @@ class RecordController extends AbstractController
             throw new \Exception("Form error");
         }
 
+        $links = [];
+        foreach ($formData["title"] as $i => $title) {
+            $links[] = [
+                "title" => $title,
+                "url" => $formData["url"][$i],
+            ];
+        }
+
         $record = new UserDictionaryRecordEntity(
             -1,
             $userId,
@@ -83,7 +91,7 @@ class RecordController extends AbstractController
             $key,
             $meaning,
             new DateTimeImmutable('NOW', new DateTimeZone($user->getTimezone())),
-            []
+            $links
         );
         $this->userDictionaryRecordService->createRecord($record);
 

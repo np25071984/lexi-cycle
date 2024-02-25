@@ -149,7 +149,12 @@ class UserDictionaryRecordRepository
     public function save(UserDictionaryRecordEntity $record): UserDictionaryRecordEntity
     {
         $links = $record->getLinks();
-        $sqlLinks = count($links) ? "'{json_encode($links)}'" : 'NULL';
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $sqlLinks = "'{$linksEncoded}'";
+        } else {
+            $sqlLinks = "'NULL'";
+        }
         $sqlDue = $record->getDue()->format('Y-m-d H:i:sP');
 
         $query = <<<SQL

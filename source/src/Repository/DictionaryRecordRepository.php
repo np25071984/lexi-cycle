@@ -53,7 +53,12 @@ class DictionaryRecordRepository
     {
         $key = $record->getKey();
         $links = $record->getLinks();
-        $sqlLinks = count($links) ? "'{json_encode($links)}'" : 'NULL';
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $sqlLinks = "'{$linksEncoded}'";
+        } else {
+            $sqlLinks = "'NULL'";
+        }
 
         $query = <<<SQL
             INSERT INTO "dictionary"(key, meaning, links)
