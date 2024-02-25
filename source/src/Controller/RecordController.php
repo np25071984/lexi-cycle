@@ -28,13 +28,33 @@ class RecordController extends AbstractController
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
-
         $user = $this->userRepository->getUserById($userId);
+
         $records = $this->userDictionaryRecordRepository->getRecords($userId);
 
         return $this->render('Record/list.html.twig', [
             'user' => $user,
             'records' => $records,
+        ]);
+    }
+
+    #[Route('/records/{recordId}', name: 'route_record_get', methods: ['GET'])]
+    public function getRecord(Request $request, int $recordId)
+    {
+        $userId = $request->getSession()->get('user_id');
+        if (is_null($userId)) {
+            return $this->redirectToRoute('route_get_login');
+        }
+
+        $user = $this->userRepository->getUserById($userId);
+        $record = $this->userDictionaryRecordRepository->findByUserAndRecordId($userId, $recordId);
+        if (is_null($record)) {
+            throw new \Exception("Record wasn't found");
+        }
+
+        return $this->render('Home/index.html.twig', [
+            "user" => $user,
+            "record" => $record,
         ]);
     }
 
@@ -45,7 +65,6 @@ class RecordController extends AbstractController
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
-
         $user = $this->userRepository->getUserById($userId);
 
         return $this->render('Record/add.html.twig', [
@@ -53,14 +72,34 @@ class RecordController extends AbstractController
         ]);
     }
 
-    #[Route('/record/add', name: 'route_record_add_post', methods: ['POST'])]
-    public function postAddRecord(Request $request)
+    #[Route('/record/{recordId}/edit', name: 'route_record_edit_get', methods: ['GET'])]
+    public function getEditRecord(Request $request, int $recordId)
     {
         $userId = $request->getSession()->get('user_id');
         if (is_null($userId)) {
             return $this->redirectToRoute('route_get_login');
         }
+        $user = $this->userRepository->getUserById($userId);
 
+        $record = $this->userDictionaryRecordRepository->findByUserAndRecordId($userId, $recordId);
+        if (is_null($record)) {
+            throw new \Exception("Record wasn't found");
+        }
+
+        return $this->render('Record/edit.html.twig', [
+            'user' => $user,
+            'record' => $record,
+        ]);
+    }
+
+    #[Route('/record/{recordId}/edit', name: 'route_record_edit_post', methods: ['POST'])]
+    public function postEditRecord(Request $request, int $recordId)
+    {
+
+        $userId = $request->getSession()->get('user_id');
+        if (is_null($userId)) {
+            return $this->redirectToRoute('route_get_login');
+        }
         $user = $this->userRepository->getUserById($userId);
 
         $formData = $request->request->all();
@@ -77,11 +116,59 @@ class RecordController extends AbstractController
         }
 
         $links = [];
-        foreach ($formData["title"] as $i => $title) {
-            $links[] = [
-                "title" => $title,
-                "url" => $formData["url"][$i],
-            ];
+        if (isset($formData["title"]) && isset($formData["url"])) {
+            foreach ($formData["title"] as $i => $title) {
+                $links[] = [
+                    "title" => $title,
+                    "url" => $formData["url"][$i],
+                ];
+            }
+        }
+
+        $record = new UserDictionaryRecordEntity(
+            $recordId,
+            $userId,
+            new State0(), // let's consider an updated Record as a completely new one
+            $key,
+            $meaning,
+            new DateTimeImmutable('NOW', new DateTimeZone($user->getTimezone())),
+            $links
+        );
+        $this->userDictionaryRecordService->updateRecord($record);
+
+        return $this->redirectToRoute('route_records_get');
+    }
+
+    #[Route('/record/add', name: 'route_record_add_post', methods: ['POST'])]
+    public function postAddRecord(Request $request)
+    {
+        $userId = $request->getSession()->get('user_id');
+        if (is_null($userId)) {
+            return $this->redirectToRoute('route_get_login');
+        }
+        $user = $this->userRepository->getUserById($userId);
+
+        $formData = $request->request->all();
+        $key = $formData["key"] ?? null;
+        if (is_null($key)) {
+            // TODO: redirect to route_record_add_get with error
+            throw new \Exception("Form error");
+        }
+
+        $meaning = $formData["meaning"] ?? null;
+        if (is_null($meaning)) {
+            // TODO: redirect to route_record_add_get with error
+            throw new \Exception("Form error");
+        }
+
+        $links = [];
+        if (isset($formData["title"]) && isset($formData["url"])) {
+            foreach ($formData["title"] as $i => $title) {
+                $links[] = [
+                    "title" => $title,
+                    "url" => $formData["url"][$i],
+                ];
+            }
         }
 
         $record = new UserDictionaryRecordEntity(

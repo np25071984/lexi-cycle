@@ -153,20 +153,46 @@ class UserDictionaryRecordRepository
             $linksEncoded = json_encode($links);
             $sqlLinks = "'{$linksEncoded}'";
         } else {
-            $sqlLinks = "'NULL'";
+            $sqlLinks = "NULL";
         }
         $sqlDue = $record->getDue()->format('Y-m-d H:i:sP');
 
         $query = <<<SQL
             INSERT INTO "user-dictionary"(user_id, record_id, meaning, links, due, state)
             VALUES(
-                '{$record->getUserId()}',
-                '{$record->getRecordId()}',
+                {$record->getUserId()},
+                {$record->getRecordId()},
                 '{$record->getMeaning()}',
                 {$sqlLinks},
                 '{$sqlDue}',
                 '{$record->getState()->getId()}'
             )
+            SQL;
+        $this->connection->executeQuery($query);
+
+        return $record;
+    }
+
+    public function update(int $origRecordId, UserDictionaryRecordEntity $record): UserDictionaryRecordEntity
+    {
+        $links = $record->getLinks();
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $sqlLinks = "'{$linksEncoded}'";
+        } else {
+            $sqlLinks = "NULL";
+        }
+        $sqlDue = $record->getDue()->format('Y-m-d H:i:sP');
+
+        $query = <<<SQL
+            UPDATE "user-dictionary" SET
+                record_id = {$record->getRecordId()},
+                meaning = '{$record->getMeaning()}',
+                links = {$sqlLinks},
+                due = '{$sqlDue}',
+                state = '{$record->getState()->getId()}'
+            WHERE user_id = {$record->getUserId()}
+                AND record_id = {$origRecordId}
             SQL;
         $this->connection->executeQuery($query);
 

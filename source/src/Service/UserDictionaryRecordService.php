@@ -51,4 +51,33 @@ class UserDictionaryRecordService
 
         $this->userDictionaryRecordRepository->save($realUserDictionaryRecordEntity);
     }
+
+    public function  updateRecord(UserDictionaryRecordEntity $userDictionaryRecord): void {
+        // TODO: Apply UnitOfWork to wrap it into a transaction
+        $origRecordId = $userDictionaryRecord->getRecordId();
+        $key = $userDictionaryRecord->getKey();
+
+        $dictionaryRecord = $this->dictionaryRecordRepository->findByKey($key);
+        if (is_null($dictionaryRecord)) {
+            $record = new DictionaryRecordEntity(
+                $userDictionaryRecord->getRecordId(),
+                $key,
+                $userDictionaryRecord->getMeaning(),
+                $userDictionaryRecord->getLinks(),
+            );
+            $dictionaryRecord = $this->dictionaryRecordRepository->save($record);
+        }
+
+        $realUserDictionaryRecordEntity = new UserDictionaryRecordEntity(
+            $dictionaryRecord->getRecordId(),
+            $userDictionaryRecord->getUserId(),
+            $userDictionaryRecord->getState(),
+            $userDictionaryRecord->getKey(),
+            $userDictionaryRecord->getMeaning(),
+            $userDictionaryRecord->getDue(),
+            $userDictionaryRecord->getLinks(),
+        );
+
+        $this->userDictionaryRecordRepository->update($origRecordId, $realUserDictionaryRecordEntity);
+    }
 }

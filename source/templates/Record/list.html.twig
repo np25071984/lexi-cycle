@@ -20,7 +20,9 @@
                 <td>{{ record.getState().getId() }}</td>
                 <td>{{ record.getDue().format("Y-m-d H:i:s") }}</td>
                 <td>
-                    <a href="{{ path('route_record_delete_get', {'recordId': record.getRecordId()}) }}" class="btn btn-warning" role="button">Delete</a>
+                    <a href="{{ path('route_record_get', {'recordId': record.getRecordId()}) }}" class="btn btn-sm btn-light" role="button">🔍</a>
+                    <a href="{{ path('route_record_edit_get', {'recordId': record.getRecordId()}) }}" class="btn btn-sm btn-light" role="button">✎</a>
+                    <a href="{{ path('route_record_delete_get', {'recordId': record.getRecordId()}) }}" class="btn btn-sm btn-light" role="button">❌</a>
                 </td>
             </tr>
         {% endfor %}

@@ -10,13 +10,15 @@
         <small>{{ record.getState().getId() }}</small>
     </div>
 </div>
-<div class="mt-5">
+
+<div class="mt-5 collapse" id="record-meaning">
     <div class="mr-auto ml-auto">
         {% if record.getMeaning() != null %}
             {{ record.getMeaning() | markdown_to_html }}
         {% endif %}
     </div>
 </div>
+
 {% set links = record.getLinks() %}
 {% if links|length > 0 %}
 <div class="mt-5">
@@ -31,10 +33,14 @@
 <div class="mt-5 mb-5">
     <div class="mr-auto ml-auto text-center">
         <a href="{{ path('route_state_backward_get', {'userId': user.getId(), 'recordId': record.getRecordId()}) }}" class="btn btn-light" role="button">
-            Bad
+            Don't remember
         </a>
+        <a class="btn btn-light" data-bs-toggle="collapse" href="#record-meaning" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Show meaning
+        </a>
+
         <a href="{{ path('route_state_forward_get', {'userId': user.getId(), 'recordId': record.getRecordId()}) }}" class="btn btn-light" role="button">
-            Good
+            Know it well
         </a>
     </div>
 </div>
