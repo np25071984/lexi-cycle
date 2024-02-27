@@ -98,10 +98,12 @@ class UserDictionaryRecordRepository
                 d.record_id,
                 CASE WHEN ud.meaning IS NULL THEN d.meaning ELSE ud.meaning END AS meaning,
                 ud.due,
+                u.timezone,
                 CASE WHEN ud.links IS NULL THEN d.links ELSE ud.links END AS links,
                 state
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
+            INNER JOIN "user" u ON u.id = ud.user_id
             WHERE ud.user_id = {$userId} AND ud.record_id = {$recordId}
             SQL;
 

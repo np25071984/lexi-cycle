@@ -57,7 +57,7 @@ class DictionaryRecordRepository
             $linksEncoded = json_encode($links);
             $sqlLinks = "'{$linksEncoded}'";
         } else {
-            $sqlLinks = "'NULL'";
+            $sqlLinks = "NULL";
         }
 
         $query = <<<SQL
