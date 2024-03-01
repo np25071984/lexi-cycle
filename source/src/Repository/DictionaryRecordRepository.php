@@ -16,13 +16,15 @@ class DictionaryRecordRepository
     public function getByRecordId(int $recordId): DictionaryRecordEntity
     {
         $query = <<<SQL
-            SELECT
-                *
+            SELECT *
             FROM "dictionary"
-            WHERE record_id = {$recordId}
+            WHERE record_id = :record_id
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('record_id', $recordId);
+        $result = $stmt->executeQuery();
 
-        $records = $this->connection->fetchAllAssociative($query);
+        $records = $result->fetchAllAssociative($query);
         $rawRecord = $records[0] ?? null;
         if (is_null($rawRecord)) {
             throw new \Exception("DictionaryRecord wasn't found");
@@ -34,13 +36,15 @@ class DictionaryRecordRepository
     public function findByKey(string $key): ?DictionaryRecordEntity
     {
         $query = <<<SQL
-            SELECT
-                *
+            SELECT *
             FROM "dictionary"
-            WHERE key = '{$key}'
+            WHERE key = :key
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('key', $key);
+        $result = $stmt->executeQuery();
 
-        $records = $this->connection->fetchAllAssociative($query);
+        $records = $result->fetchAllAssociative($query);
         $rawRecord = $records[0] ?? null;
         if (is_null($rawRecord)) {
             return null;
@@ -53,23 +57,25 @@ class DictionaryRecordRepository
     {
         $key = $record->getKey();
         $links = $record->getLinks();
-        if (count($links)) {
-            $linksEncoded = json_encode($links);
-            $sqlLinks = "'{$linksEncoded}'";
-        } else {
-            $sqlLinks = "NULL";
-        }
 
         $query = <<<SQL
             INSERT INTO "dictionary"(key, meaning, links)
             VALUES(
-                '{$key}',
-                '{$record->getMeaning()}',
-                {$sqlLinks}
+                :key,
+                :meaning,
+                :sql_links
             )
             SQL;
-
-        $this->connection->executeQuery($query);
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('key', $key);
+        $stmt->bindValue('meaning', $record->getMeaning());
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $stmt->bindValue('sql_links', $linksEncoded);
+        } else {
+            $stmt->bindValue('sql_links', null);
+        }
+        $stmt->executeQuery();
 
         $realRecord = $this->findByKey($key);
         if (is_null($realRecord)) {

@@ -13,7 +13,12 @@ class UserRepository
 
     public function findUserByEmail(string $email): ?UserEntity
     {
-        $users = $this->connection->fetchAllAssociative(sprintf("SELECT * FROM \"user\" WHERE email='%s'", $email));
+        $query = "SELECT * FROM \"user\" WHERE email = :email";
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('email', $email);
+        $result = $stmt->executeQuery();
+        $users = $result->fetchAllAssociative($query);
+
         $rawUser = $users[0] ?? null;
         if (is_null($rawUser)) {
             return null;
@@ -24,8 +29,12 @@ class UserRepository
 
     public function getUserById(int $id): UserEntity
     {
-        $users = $this->connection->fetchAllAssociative(sprintf("SELECT * FROM \"user\" WHERE id=%d", $id));
-        // $users = $this->connection->fetchAllAssociative("SELECT * FROM \"user\"");
+        $query = "SELECT * FROM \"user\" WHERE id = :id";
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('id', $id);
+        $result = $stmt->executeQuery();
+        $users = $result->fetchAllAssociative($query);
+
         $rawUser = $users[0] ?? null;
         if (is_null($rawUser)) {
             throw new \Exception("User wasn't found");

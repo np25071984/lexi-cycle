@@ -31,12 +31,15 @@ class UserDictionaryRecordRepository
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
             INNER JOIN "user" u ON u.id = ud.user_id
-            WHERE ud.user_id = {$userId} AND ud.due < NOW()
+            WHERE ud.user_id = :user_id AND ud.due < NOW()
             ORDER BY ud.due ASC
             LIMIT 1
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $userId);
+        $result = $stmt->executeQuery();
 
-        $records = $this->connection->fetchAllAssociative($query);
+        $records = $result->fetchAllAssociative($query);
         $rawRecord = $records[0] ?? null;
         if (is_null($rawRecord)) {
             return null;
@@ -62,14 +65,19 @@ class UserDictionaryRecordRepository
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
             INNER JOIN "user" u ON u.id = ud.user_id
-            WHERE ud.user_id = {$userId}
+            WHERE ud.user_id = :user_id
             ORDER BY due ASC
-            OFFSET {$offset}
-            LIMIT {$limit}
+            OFFSET :offset
+            LIMIT :limit
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('offset', $offset);
+        $stmt->bindValue('limit', $limit);
+        $result = $stmt->executeQuery();
 
         $records = [];
-        $rawRecords = $this->connection->fetchAllAssociative($query);
+        $rawRecords = $result->fetchAllAssociative($query);
         foreach ($rawRecords as $rawRecord) {
             $records[] = $this->buildEntity($userId, $rawRecord);
         }
@@ -82,11 +90,13 @@ class UserDictionaryRecordRepository
         $query = <<<SQL
             SELECT COUNT(*) AS cnt
             FROM "user-dictionary"
-            WHERE user_id = {$userId}
+            WHERE user_id = :user_id
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $userId);
+        $result = $stmt->executeQuery();
 
-        $records = [];
-        $rawResult = $this->connection->fetchAllAssociative($query);
+        $rawResult = $result->fetchAllAssociative($query);
         return (int)$rawResult[0]["cnt"];
     }
 
@@ -104,10 +114,14 @@ class UserDictionaryRecordRepository
             FROM "user-dictionary" ud
             INNER JOIN dictionary d ON d.record_id = ud.record_id
             INNER JOIN "user" u ON u.id = ud.user_id
-            WHERE ud.user_id = {$userId} AND ud.record_id = {$recordId}
+            WHERE ud.user_id = :user_id AND ud.record_id = :record_id
             SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('record_id', $recordId);
+        $result = $stmt->executeQuery();
 
-        $records = $this->connection->fetchAllAssociative($query);
+        $records = $result->fetchAllAssociative($query);
         $rawRecord = $records[0] ?? null;
         if (is_null($rawRecord)) {
             return null;
@@ -146,26 +160,32 @@ class UserDictionaryRecordRepository
     public function save(UserDictionaryRecordEntity $record): UserDictionaryRecordEntity
     {
         $links = $record->getLinks();
-        if (count($links)) {
-            $linksEncoded = json_encode($links);
-            $sqlLinks = "'{$linksEncoded}'";
-        } else {
-            $sqlLinks = "NULL";
-        }
         $sqlDue = $record->getDue()->format('Y-m-d H:i:sP');
 
         $query = <<<SQL
             INSERT INTO "user-dictionary"(user_id, record_id, meaning, links, due, state)
             VALUES(
-                {$record->getUserId()},
-                {$record->getRecordId()},
-                '{$record->getMeaning()}',
-                {$sqlLinks},
-                '{$sqlDue}',
-                '{$record->getState()->getId()}'
+                :user_id,
+                :record_id,
+                :meaning,
+                :sql_links,
+                :sql_due,
+                :state
             )
             SQL;
-        $this->connection->executeQuery($query);
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $record->getUserId());
+        $stmt->bindValue('record_id', $record->getRecordId());
+        $stmt->bindValue('meaning', $record->getMeaning());
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $stmt->bindValue('sql_links', $linksEncoded);
+        } else {
+            $stmt->bindValue('sql_links', null);
+        }
+        $stmt->bindValue('sql_due', $sqlDue);
+        $stmt->bindValue('state', $record->getState()->getId());
+        $stmt->executeQuery();
 
         return $record;
     }
@@ -173,25 +193,32 @@ class UserDictionaryRecordRepository
     public function update(int $origRecordId, UserDictionaryRecordEntity $record): UserDictionaryRecordEntity
     {
         $links = $record->getLinks();
-        if (count($links)) {
-            $linksEncoded = json_encode($links);
-            $sqlLinks = "'{$linksEncoded}'";
-        } else {
-            $sqlLinks = "NULL";
-        }
         $sqlDue = $record->getDue()->format('Y-m-d H:i:sP');
 
         $query = <<<SQL
             UPDATE "user-dictionary" SET
-                record_id = {$record->getRecordId()},
-                meaning = '{$record->getMeaning()}',
-                links = {$sqlLinks},
-                due = '{$sqlDue}',
-                state = '{$record->getState()->getId()}'
-            WHERE user_id = {$record->getUserId()}
-                AND record_id = {$origRecordId}
+                record_id = :record_id,
+                meaning = :meaning,
+                links = :sql_links,
+                due = :due,
+                state = :state
+            WHERE user_id = :user_id
+                AND record_id = :orig_record_id
             SQL;
-        $this->connection->executeQuery($query);
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('record_id', $record->getRecordId());
+        $stmt->bindValue('meaning', $record->getMeaning());
+        if (count($links)) {
+            $linksEncoded = json_encode($links);
+            $stmt->bindValue('sql_links', $linksEncoded);
+        } else {
+            $stmt->bindValue('sql_links', null);
+        }
+        $stmt->bindValue('due', $sqlDue);
+        $stmt->bindValue('state', $record->getState()->getId());
+        $stmt->bindValue('user_id', $record->getUserId());
+        $stmt->bindValue('orig_record_id', $origRecordId);
+        $stmt->executeQuery();
 
         return $record;
     }
@@ -200,9 +227,13 @@ class UserDictionaryRecordRepository
     {
         $query = <<<SQL
             DELETE FROM "user-dictionary"
-            WHERE user_id = {$userId} AND record_id = {$recordId}
-        SQL;
-        $this->connection->executeQuery($query);
+            WHERE user_id = :user_id AND record_id = :record_id
+            SQL;
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('user_id', $userId);
+        $stmt->bindValue('record_id', $recordId);
+
+        $stmt->executeQuery();
     }
 
     private function buildEntity(int $userId, array $rawData): UserDictionaryRecordEntity
